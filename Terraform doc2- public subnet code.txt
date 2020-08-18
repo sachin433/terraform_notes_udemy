@@ -1,0 +1,79 @@
+Difference between public subnet and private subnet:
+---------------------------------------------------
+A public subnet has a route table that says, “send all outbound traffic (anything to the CIDR block 0.0.0.0/0) via the Internet Gateway(igw).”
+Public subnet can get inbound traffic provided security group allows. 
+
+A private subnet either does not allow outbound traffic to the internet or has a route that says, “send all outbound traffic via this NAT(Network Address translation) gateway.”
+NATs are really common. Run a wireless router? The router itself does network address translation. Importantly a NAT won’t allow inbound traffic from the internet — that’s what makes a private subnet, well, private.
+
+
+INTERNET GATEWAY:
+----------------
+An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication between your VPC and the internet.
+
+An internet gateway serves two purposes: 
+to provide a target in your VPC route tables for internet-routable traffic, 
+and to perform network address translation (NAT) for instances that have been assigned public IPv4 addresses.
+
+ex:
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main"
+  }
+}
+
+
+
+ROUTE TABLE CREATION:
+---------------------
+
+Code TO create public subnets in a VPC:
+=================================================
+provider "aws" {
+  region = "us-east-1"
+}
+
+data "aws_availability_zones" "azs" {
+
+}
+
+variable "vpc_cidr" {
+  description = "choose value for cidr"
+  default     = "10.20.0.0/16"
+  type        = string
+}
+
+variable "region" {
+  default = "us-east-1"
+  type    = string
+
+}
+
+resource "aws_vpc" "my_app" {
+  cidr_block       = "${var.vpc_cidr}"
+  instance_tenancy = "default"
+
+  tags = {
+    Name = "JavaHomeVpc"
+    Env  = "${terraform.workspace}"
+  }
+}
+
+locals {
+  az_names = "${data.aws_availability_zones.azs.names}"
+}
+
+resource "aws_subnet" "public" {
+  vpc_id     = "${aws_vpc.my_app.id}"
+  count      = "${length(local.az_names)}"
+  cidr_block = "${cidrsubnet(var.vpc_cidr, 8, count.index)}"
+  #to count total aws_availability_zone
+
+  availability_zone = "${local.az_names[count.index]}"
+
+  tags = {
+    Name = "PublicSubnet-${count.index + 1}"
+  }
+}
