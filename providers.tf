@@ -14,11 +14,11 @@ provider "aws" {
 # output "my_cidr" {
 #   value = "${aws_vpc.my_vpc.cidr_block}"
 # }
-terraform {
-  backend "s3" {
-    bucket         = "javabucket123"
-    key            = "terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "Java-home-table"
-  }
-}
+#terraform {
+#  backend "s3" {
+#    bucket         = "javabucket123"
+#    key            = "terraform.tfstate"
+#    region         = "us-east-1"
+#    dynamodb_table = "Java-home-table"
+#  }
+#}
