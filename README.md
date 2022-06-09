@@ -30,7 +30,7 @@ output "my_cidr" {
 
 **In order to store state files remotely, we can use "terraform S3 backend" module:
 =>Stores the state as a given key(ex: terraform.tfstate) in a given bucket on Amazon S3. This backend also supports state locking and consistency checking via Dynamo DB, which can be enabled by setting the dynamodb_table field to an existing DynamoDB table name. A single DynamoDB table can be used to lock multiple remote state files.
-
+```
 terraform {
   backend "s3" {
     bucket = "javabucket123"
@@ -38,7 +38,7 @@ terraform {
     region = "us-east-1"
   }
 }
-
+```
 //while adding terraform backend run below command (ensure that bucket named "javabucket123" is already present in s3 as state file should be present in bucket before running terraform apply which could have created resource)
 #terraform init
 
@@ -50,7 +50,7 @@ terraform {
 DynamoDB is used for state locking consistency. It acquires the lock on state file when one developer is applying changes and releases it only when the changes are done.
 "dynamodb_table" - (Optional) Name of DynamoDB Table to use for state locking and consistency. The table must have a primary key named "LockID" with type of string. If not configured, state locking will be disabled.Create this DynamoDB table with LockID key in AWS console before applying .tf file.
 
-
+```
 terraform {
   backend "s3" {
     bucket         = "javabucket123"
@@ -60,7 +60,7 @@ terraform {
   }
 }
 
-
+```
 after adding "dynamodb_table" run below commands:
 #terraform init
 #terraform apply
@@ -68,13 +68,13 @@ after adding "dynamodb_table" run below commands:
 =================================================================================================================================================================
 
 TERRAFORM VARIABLES:-
-
+```
 variable "vpc_cidr" {
   description = "choose value for cidr"
   default     = "10.20.0.0/16"
   type = "string"
 }
-
+```
 //to use this variable:
 cidr_block = "${var.vpc_cidr}"
 
@@ -94,12 +94,13 @@ vpc_cidr=10.30.0.0/16
 
 
 // way to define variables as array
+```
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
 }
 
-
+```
 =====================================================================================================================================
 
 TERRAFORM WORKSPACE: same configuration files can be used to deploy in different environments like dev,UAT,prod
@@ -122,7 +123,7 @@ At this stage separate state files will get created for different env in s3 buck
 ======================================================================================================================================
 
 TERRAFORM USING LOOPS: we can create n instances of a resource by mentioning (count = N ) as shown below:
-
+```
 resource "aws_vpc" "my_vpc" {
   count            = 3
   cidr_block       = "${var.vpc_cidr}"
@@ -133,11 +134,11 @@ resource "aws_vpc" "my_vpc" {
     Env  = "${terraform.workspace}"
   }
 }
-
+```
 ======================================================================================================================================
 
 TERRAFORM CONDITIONS- CREATING RESOURCES CONDITIONALLY:
-
+```
 resource "aws_vpc" "my_vpc" {
   count            = "${terraform.workspace == "dev" ? 0:1}"
   cidr_block       = "${var.vpc_cidr}"
@@ -148,13 +149,13 @@ resource "aws_vpc" "my_vpc" {
     Env  = "${terraform.workspace}"
   }
 }
-
+```
 =====================================================================================================================================
 
 //Terrafrom local variables:
 locals.tf
 ----------
-
+```
 locals {
   vpc_name = "${terraform.workspace == "dev" ? "javadevvpc" : "javaprodvpc"}"
 }
@@ -169,11 +170,11 @@ resource "aws_vpc" "my_vpc" {
     Env  = "${terraform.workspace}"
   }
 }
-
+```
 =====================================================================================================================================
 
 TERRAFORM Public SUBNET:
-
+```
 resource "aws_subnet" "public" {
   vpc_id     = "${aws_vpc.my_app.id}"
   cidr_block = "10.0.1.0/24"
@@ -196,14 +197,15 @@ variable "region" {
 }
 
 
-
+```
 DATA SOURCE TERRAFORM: used to fetch data from outside the terraform(like new AMI, availability zones etc)
 
 #DATA source to fetch availability zones
-
+```
 data "aws_availability_zones" "azs" {
 
 }
+```
 --------------------------------------------------------------------------------------------------------------------------------------
 #cidrsubnet function -used to created subnet out of a CIDR block
 cidrsubnet("Prefix",new-bits,subnet-number)
@@ -215,6 +217,7 @@ ex: cidrsubnet("172.16.0.0/12",4,2) = 172.18.0.0/16
 =========================================================================================================================================
 Code TO create public subnets in a VPC:
 ========================================================================================================================================
+```
 provider "aws" {
   region = "us-east-1"
 }
@@ -261,7 +264,7 @@ resource "aws_subnet" "public" {
     Name = "PublicSubnet-${count.index + 1}"
   }
 }
-
+```
 ==========================================================================================================================================
 
 
