@@ -4,7 +4,7 @@
 #terraform init (will download provider plugin based on entry in .tf file)
 
 //Creating first AWS resource (refer docs for syntax at https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc)
-
+```
 provider "aws" {
   region = "us-east-1"
 }
@@ -22,7 +22,7 @@ output "my_cidr" {
 }
 
 
-
+```
 //Command to execute terraform scripts in current directory (above script creates a vpc in our AWS management console)
 #terraform apply
 
