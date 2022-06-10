@@ -267,6 +267,45 @@ resource "aws_subnet" "public" {
 ```
 ==========================================================================================================================================
 
+	
+Variables Types in terraform:
+	1) string,number,bool
+	2) complex types:
+```
+1)
+variable "regions" {
+  description = "Enter value for regions"
+  type        = list(string)
+  default = ["us-east-1","us-east-2"]
+}
+
+2)
+ variable "instance_type" {
+    type = map
+    default = {
+        "us-east-1" = "t2.micro"
+        "us-east-2" = "t3.micro"
+    }
+   description = its a map of string values only
+ }
+
+3)
+variable "instance_details" {
+    type = object({
+        name = string
+        numbers = number
+        azs = list(string)
+    }
+    )
+  description = "here we can have hybrid params unlike list and map"
+  default = {
+    name = "my_instance"
+    numbers = 3
+    azs = ["us-east-1","us-east-2"]
+  }
+}
+	
+	```
 
 
 
