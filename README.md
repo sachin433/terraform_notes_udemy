@@ -1,8 +1,9 @@
 
 //Initialising terraform project
+```
 #cd <location having terraform file>
 #terraform init (will download provider plugin based on entry in .tf file)
-
+```
 //Creating first AWS resource (refer docs for syntax at https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc)
 ```
 provider "aws" {
